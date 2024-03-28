@@ -1,0 +1,26 @@
+
+ANALISA DAN PERANCANGAN SISTEM INFORMASI BERBASIS WEB PADA INVENTARIS BARANG MENGGUNAKAN FRAMEWORK REACT.JS
+
+supabase
+name : skripsi-inventory
+password : ceRPITfHHmcdb2um
+
+table database
+	user : 
+		username 
+		password
+
+	barang_masuk :	
+		kode barang
+		nama barang
+		kategori 
+		kuantitas maksimal 
+		kuantitas minimal 
+		kadaluarsa
+		tanggal masuk
+
+	barang_keluar : 
+		kode barang
+		nama barang
+		kategori
+		tanggal keluar 
