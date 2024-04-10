@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react";
 
 const Organization = () => {
-  return (
-    <div>Organization</div>
-  )
-}
+  return <div className="">
+    
+  </div>;
+};
 
-export default Organization
+export default Organization;

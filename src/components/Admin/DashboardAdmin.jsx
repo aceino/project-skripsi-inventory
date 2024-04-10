@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/config";
 
 const DashboardAdmin = () => {
   const [session, setSession] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -20,7 +21,7 @@ const DashboardAdmin = () => {
   }, []);
 
   if (!session) {
-    return <Navigate to="/admin/login" replace={false} />;
+    return navigate("/admin/login");
   }
 
   return (

@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabase/config";
 
 const Login = () => {
   const [session, setSession] = useState(null);
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "http://localhost:5173/admin/dashboard",
-      },
-    });
+  const handleLogin = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: "http://localhost:5173/admin/organization",
+        },
+      });
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
   };
 
   useEffect(() => {
@@ -26,12 +31,12 @@ const Login = () => {
       setSession(session);
     });
 
+    if (session) {
+      return navigate("/admin/organization");
+    }
+    
     return () => subscription.unsubscribe();
   }, []);
-
-  if (session) {
-    return <Navigate to="/admin/dashboard" replace={false} />;
-  }
 
   return (
     <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-20 bg-[#FAFAF6]">

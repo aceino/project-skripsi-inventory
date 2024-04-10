@@ -6,6 +6,9 @@ name : skripsi-inventory
 password : ceRPITfHHmcdb2um
 
 table database
+	organisasi: 
+		
+
 	user : 
 		username 
 		password
