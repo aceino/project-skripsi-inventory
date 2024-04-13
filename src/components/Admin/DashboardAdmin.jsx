@@ -4,6 +4,7 @@ import { supabase } from "../../supabase/config";
 
 const DashboardAdmin = () => {
   const [session, setSession] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,12 +21,14 @@ const DashboardAdmin = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (!session) {
-    return navigate("/admin/login");
-  }
+  useEffect(() => {
+    if (!session) {
+      navigate("/admin/login");
+    }
+  }, [session, navigate]);
 
   return (
-    <div className="flex justify-center items-start mx-auto lg:p-10 h-screen text-white">
+    <div className="flex justify-center items-start mx-auto w-full p-10 h-screen text-white">
       <div className="flex flex-col justify-normal items-center lg:w-1/5 bg-[#22092C] rounded-tl-lg rounded-bl-lg max-h-full p-5">
         <div className="flex flex-col justify-center w-full h-60">
           <div className="w-20 mx-auto lg:w-28">
@@ -33,6 +36,7 @@ const DashboardAdmin = () => {
           </div>
 
           <div className="mt-10">
+            <h1 className="font-bold text-lg">nama org</h1>
             <h1 className="font-bold text-lg">nama</h1>
           </div>
         </div>
@@ -50,6 +54,9 @@ const DashboardAdmin = () => {
           <a href="#" className="text-left font-semibold text-lg">
             Suppliers
           </a>
+          <a href="#" className="text-left font-semibold text-lg">
+            Reports
+          </a>
         </div>
 
         <div className="flex flex-col justify-center w-full h-60 gap-5">
@@ -63,7 +70,7 @@ const DashboardAdmin = () => {
         </div>
       </div>
 
-      <div className="flex flex-col justify-start items-center lg:w-4/5 bg-red-300 rounded-tr-lg rounded-br-lg min-h-full p-5">
+      <div className="flex flex-col justify-start items-center w-4/5 bg-red-300 rounded-tr-lg rounded-br-lg min-h-full p-5">
         {/* <Menu /> */}
       </div>
     </div>
