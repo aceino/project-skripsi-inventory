@@ -4,7 +4,26 @@ import { supabase } from "../../supabase/config";
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
+  const [session, setSession] = useState(null)
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  if (!session) {
+    return (navigate("/admin/login"))
+  }
+  
   return (
     <div className="flex justify-center items-start mx-auto w-full p-10 h-screen text-white">
       <div className="flex flex-col justify-normal items-center lg:w-1/5 bg-[#22092C] rounded-tl-lg rounded-bl-lg max-h-full p-5">

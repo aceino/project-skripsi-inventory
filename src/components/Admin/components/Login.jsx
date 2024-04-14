@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabase/config";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
   const [msg, setMsg] = useState("");
+  const [session, setSession] = useState(null);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +22,6 @@ const Login = () => {
         setMsg("Failed to Login");
         setEmail("");
         setPassword("");
-        console.log(error.message);
         return;
       }
 
@@ -33,12 +32,31 @@ const Login = () => {
         return;
       }
 
-      setMsg("Login successful");
-      console.log(data);
+      navigate("/admin/dashboard");
     } catch (error) {
       setMsg("An error occurred. Please try again later.");
     }
   };
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (session) {
+      navigate("/admin/dashboard");
+    }
+  }, [session, navigate]);
 
   return (
     <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-20 bg-[#FAFAF6]">
