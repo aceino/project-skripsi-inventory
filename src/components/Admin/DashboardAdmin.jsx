@@ -3,29 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/config";
 
 const DashboardAdmin = () => {
-  const [session, setSession] = useState(null);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!session) {
-      navigate("/admin/login");
-    }
-  }, [session, navigate]);
 
   return (
     <div className="flex justify-center items-start mx-auto w-full p-10 h-screen text-white">

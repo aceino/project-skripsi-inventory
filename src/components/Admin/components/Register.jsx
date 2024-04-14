@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabase/config";
 
 const Register = () => {
@@ -7,27 +7,40 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatpassword] = useState("");
-  const [errorMsg, setErrormsg] = useState("");
+  const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     if (password !== repeatPassword) {
-      setErrormsg("Your password is not match with confirm password");
+      setMsg("Your password is not match with confirm password");
       setPassword("");
       setRepeatpassword("");
       return;
     }
 
     try {
-      const { error } = await supabase.from("admin").insert({
-        email,
-        username,
-        password,
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: username,
+          },
+        },
       });
 
       if (error) {
-        setErrormsg("Error ", error);
+        setMsg("Error ", error.message);
+      } else {
+        setMsg("Successfully Registered");
+        console.log(data);
+        setEmail("");
+        setUsername("");
+        setPassword("");
+        setRepeatpassword("");
+        navigate("/admin/login");
       }
     } catch (error) {
       console.error(error);
@@ -41,9 +54,15 @@ const Register = () => {
           <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-center font-bold text-4xl ">Register</h1>
-              {errorMsg && (
-                <div className="text-center font-bold text-red-600">
-                  <p>{errorMsg}</p>
+              {msg && (
+                <div
+                  className={`text-center font-bold rounded-md p-5 ${
+                    msg.includes("Error") || msg.includes("Your password")
+                      ? "bg-red-500 text-white"
+                      : "bg-green-500 text-white"
+                  }`}
+                >
+                  <p>{msg}</p>
                 </div>
               )}
               <form className="max-w-sm mx-auto" onSubmit={handleRegister}>
@@ -60,7 +79,7 @@ const Register = () => {
                     }}
                     id="email"
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                    placeholder="name@flowbite.com"
+                    placeholder="name@example.com"
                     required
                   />
                 </div>
@@ -124,7 +143,10 @@ const Register = () => {
                 </button>
               </form>
               <p className="text-sm font-light text-black">
-                Sudah punya akun ? <Link to="/admin/login">Login</Link>
+                Sudah punya akun ?{" "}
+                <Link to="/admin/login" className="font-bold">
+                  Login
+                </Link>
               </p>
             </div>
           </div>
