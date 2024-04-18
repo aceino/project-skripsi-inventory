@@ -11,6 +11,8 @@ const Register = () => {
   });
 
   const [msg, setMsg] = useState("");
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,14 +23,18 @@ const Register = () => {
 
       if (!user) {
         navigate("/admin/register");
-      }else {
+      } else {
         navigate("/admin/dashboard");
+        setUser(user);
       }
     };
 
     getUser();
   }, [navigate]);
 
+  if (!user) {
+    return null; // or a loading spinner
+  }
   const handleChange = (e) => {
     setFormData((prevFormData) => {
       return { ...prevFormData, [e.target.name]: e.target.value };

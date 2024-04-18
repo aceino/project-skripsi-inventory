@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 import { supabase } from "../../../supabase/config";
+import Dashboard from "../../Dashboard";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,8 @@ const Login = () => {
     password: "",
   });
   const [msg, setMsg] = useState("");
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,13 +23,18 @@ const Login = () => {
 
       if (!user) {
         navigate("/admin/login");
-      }else {
+      } else {
+        setUser(user);
         navigate("/admin/dashboard");
       }
     };
 
     getUser();
   }, [navigate]);
+
+  if (!user) {
+    return null; // or a loading spinner
+  }
 
   const handleChange = (e) => {
     setFormData((prevFormData) => {
@@ -65,6 +74,13 @@ const Login = () => {
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+              <Link
+                to="/"
+                element={<Dashboard />}
+                className="flex flex-row items-center gap-2 text-lg"
+              >
+                <FaArrowLeft /> Back
+              </Link>
               <h1 className="text-center font-bold text-4xl ">Login</h1>
               {msg && (
                 <div

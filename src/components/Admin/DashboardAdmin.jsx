@@ -7,6 +7,7 @@ import { VscDiffAdded } from "react-icons/vsc";
 const DashboardAdmin = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -14,9 +15,11 @@ const DashboardAdmin = () => {
         data: { user },
       } = await supabase.auth.getUser();
 
-      setUsername(user.user_metadata.username);
       if (!user) {
         navigate("/admin/login");
+      } else {
+        setUser(user);
+        setUsername(user.user_metadata.username);
       }
     };
 
@@ -31,6 +34,10 @@ const DashboardAdmin = () => {
     }
 
     navigate("/");
+  }
+
+  if (!user) {
+    return null; // or a loading spinner
   }
 
   return (
