@@ -2,17 +2,10 @@ import { supabase } from "../../../supabase/config";
 import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 
-
-
 const Organization = () => {
   const [name, setName] = useState("");
   const [phone_number, setPhone] = useState("");
   const [address, setAddress] = useState("");
-
-    const handleGoBack = () => {
-    history.goBack();
-  };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +35,6 @@ const Organization = () => {
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-white-800 dark:border-white-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              
               <div className="flex items-center gap-2 text-lg">
                 <button onClick={() => {}}>
                   <FaArrowLeft />

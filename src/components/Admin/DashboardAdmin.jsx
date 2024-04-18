@@ -1,40 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/config";
+import { useNavigate } from "react-router-dom";
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
-  const [session, setSession] = useState(null)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
+      if (!user) {
+        navigate("/admin/login");
+      }
+    };
 
-    return () => subscription.unsubscribe()
-  }, [])
+    getUser();
+  }, [navigate]);
 
-  if (!session) {
-    return (navigate("/admin/login"))
+  async function signOut() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.log(error.message);
+    }
+
+    navigate("/");
   }
-  
+
   return (
-    <div className="flex justify-center items-start mx-auto w-full p-10 h-screen text-white">
-      <div className="flex flex-col justify-normal items-center lg:w-1/5 bg-[#22092C] rounded-tl-lg rounded-bl-lg max-h-full p-5">
+    <div className="flex justify-center items-start mx-auto w-full p-10 h-screen text-white bg-white">
+      <div className="flex flex-col justify-normal items-center lg:w-1/5 bg-black rounded-tl-lg rounded-bl-lg max-h-full p-5">
         <div className="flex flex-col justify-center w-full h-60">
           <div className="w-20 mx-auto lg:w-28">
             <img src={""} alt="logo" />
           </div>
 
           <div className="mt-10">
-            <h1 className="font-bold text-lg">nama org</h1>
-            <h1 className="font-bold text-lg">nama</h1>
+            <h1 className="font-bold text-lg">name</h1>
+            <h1 className="font-bold text-lg">organization</h1>
           </div>
         </div>
 
@@ -59,7 +64,7 @@ const DashboardAdmin = () => {
         <div className="flex flex-col justify-center w-full h-60 gap-5">
           <button
             type="button"
-            // onClick={Logout}
+            onClick={signOut}
             className="text-left font-semibold text-lg"
           >
             Logout
@@ -67,7 +72,7 @@ const DashboardAdmin = () => {
         </div>
       </div>
 
-      <div className="flex flex-col justify-start items-center w-4/5 bg-red-300 rounded-tr-lg rounded-br-lg min-h-full p-5">
+      <div className="flex flex-col justify-start items-center w-4/5 bg-[#FAFAF6] rounded-tr-lg rounded-br-lg min-h-full p-5">
         {/* <Menu /> */}
       </div>
     </div>

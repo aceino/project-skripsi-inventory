@@ -3,70 +3,76 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabase/config";
 
 const Register = () => {
-  const [session, setSession] = useState(null)
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatpassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    password: "",
+    repeatPassword: "",
+  });
+
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        navigate("/admin/register");
+      }else {
+        navigate("/admin/dashboard");
+      }
+    };
+
+    getUser();
+  }, [navigate]);
+
+  const handleChange = (e) => {
+    setFormData((prevFormData) => {
+      return { ...prevFormData, [e.target.name]: e.target.value };
+    });
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (password !== repeatPassword) {
+    if (formData.password !== formData.repeatPassword) {
       setMsg("Your password is not match with confirm password");
-      setPassword("");
-      setRepeatpassword("");
+      setFormData("");
       return;
     }
 
+    if (formData.password.length < 6) {
+      setMsg("Password must be at least 6 characters long");
+      setFormData("");
+      return;
+    }
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
+        email: formData.email,
+        password: formData.password,
         options: {
+          emailRedirectTo: "http://localhost:5173/admin/login",
           data: {
-            username: username,
+            username: formData.username,
           },
         },
       });
 
       if (error) {
-        setMsg("Error ", error.message);
+        setMsg("error, ", error.message);
       } else {
-        setMsg("Successfully Registered");
+        setMsg("Check your email to verify it");
+
         console.log(data);
-        setEmail("");
-        setUsername("");
-        setPassword("");
-        setRepeatpassword("");
-        navigate("/admin/login");
+        setFormData("");
       }
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   };
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (session) {
-      navigate("/admin/dashboard");
-    }
-  }, [session, navigate]);
 
   return (
     <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-20 bg-[#FAFAF6]">
@@ -78,7 +84,9 @@ const Register = () => {
               {msg && (
                 <div
                   className={`text-center font-bold rounded-md p-5 ${
-                    msg.includes("Error") || msg.includes("Your password")
+                    msg.includes("error") ||
+                    msg.includes("Your password") ||
+                    msg.includes("Password must be")
                       ? "bg-red-500 text-white"
                       : "bg-green-500 text-white"
                   }`}
@@ -94,10 +102,7 @@ const Register = () => {
                   <input
                     name="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
+                    onChange={handleChange}
                     id="email"
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     placeholder="name@example.com"
@@ -111,10 +116,7 @@ const Register = () => {
                   <input
                     name="username"
                     type="username"
-                    value={username}
-                    onChange={(e) => {
-                      setUsername(e.target.value);
-                    }}
+                    onChange={handleChange}
                     id="username"
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     placeholder="John Doe"
@@ -128,10 +130,7 @@ const Register = () => {
                   <input
                     name="password"
                     type="password"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
+                    onChange={handleChange}
                     id="password"
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     placeholder="*********"
@@ -145,10 +144,7 @@ const Register = () => {
                   <input
                     name="repeatPassword"
                     type="password"
-                    value={repeatPassword}
-                    onChange={(e) => {
-                      setRepeatpassword(e.target.value);
-                    }}
+                    onChange={handleChange}
                     id="repeat_password"
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     placeholder="*********"

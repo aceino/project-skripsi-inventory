@@ -3,60 +3,61 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabase/config";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    password: "",
+  });
   const [msg, setMsg] = useState("");
-  const [session, setSession] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        navigate("/admin/login");
+      }else {
+        navigate("/admin/dashboard");
+      }
+    };
+
+    getUser();
+  }, [navigate]);
+
+  const handleChange = (e) => {
+    setFormData((prevFormData) => {
+      return { ...prevFormData, [e.target.name]: e.target.value };
+    });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+        email: formData.email,
+        password: formData.password,
       });
 
       if (error) {
         setMsg("Failed to Login");
-        setEmail("");
-        setPassword("");
+        setFormData("");
         return;
       }
 
       if (data.length === 0) {
         setMsg("Email not found");
-        setEmail("");
-        setPassword("");
+        setFormData("");
         return;
       }
-
       navigate("/admin/dashboard");
     } catch (error) {
       setMsg("An error occurred. Please try again later.");
     }
   };
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (session) {
-      navigate("/admin/dashboard");
-    }
-  }, [session, navigate]);
 
   return (
     <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-20 bg-[#FAFAF6]">
@@ -91,8 +92,7 @@ const Login = () => {
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     placeholder="name@flowbite.com"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -107,8 +107,7 @@ const Login = () => {
                     className="shadow-sm bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     placeholder="*********"
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleChange}
                   />
                 </div>
 
