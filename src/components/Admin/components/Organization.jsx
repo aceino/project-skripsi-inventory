@@ -1,7 +1,7 @@
 import { supabase } from "../../../supabase/config";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaArrowLeft } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardAdmin from "../DashboardAdmin";
 
 const Organization = () => {
@@ -11,6 +11,21 @@ const Organization = () => {
     address: "",
   });
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        navigate("/admin/login");
+      }
+    };
+
+    getUser();
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData((prevFormData) => {
@@ -26,7 +41,7 @@ const Organization = () => {
         name: formData.name,
         phone_number: formData.phone_number,
         address: formData.address,
-      } );
+      });
 
       if (error) {
         throw new Error(`Error inserting data: ${error.message}`);
