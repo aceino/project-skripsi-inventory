@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabase/config";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Organization from "./components/Organization";
+import { VscDiffAdded } from "react-icons/vsc";
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -11,6 +14,7 @@ const DashboardAdmin = () => {
         data: { user },
       } = await supabase.auth.getUser();
 
+      setUsername(user.user_metadata.username);
       if (!user) {
         navigate("/admin/login");
       }
@@ -37,9 +41,14 @@ const DashboardAdmin = () => {
             <img src={""} alt="logo" />
           </div>
 
-          <div className="mt-10">
-            <h1 className="font-bold text-lg">name</h1>
-            <h1 className="font-bold text-lg">organization</h1>
+          <div className="flex flex-col gap-2 mt-10">
+            <h1 className="font-bold text-lg uppercase">{username}</h1>
+            <div className="flex flex-row gap-5 items-center justify-between">
+              <h1 className="font-bold text-lg">organization</h1>
+              <Link to="/admin/organization" element={<Organization />}>
+                <VscDiffAdded size={30} />
+              </Link>
+            </div>
           </div>
         </div>
 
