@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { supabase } from "../../../supabase/config";
 import Dashboard from "../../Dashboard";
+import DashboardAdmin from "../DashboardAdmin";
 
 const Login = () => {
+ 
   const [formData, setFormData] = useState({
     email: "",
     username: "",
     password: "",
   });
+ 
   const [msg, setMsg] = useState("");
   const [user, setUser] = useState(null);
 
@@ -21,10 +24,8 @@ const Login = () => {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        navigate("/admin/login");
-      } else {
-        setUser(user);
+      if (user) {
+        setUser(user)
         navigate("/admin/dashboard");
       }
     };
@@ -32,8 +33,8 @@ const Login = () => {
     getUser();
   }, [navigate]);
 
-  if (!user) {
-    return null; // or a loading spinner
+  if (user) {
+    return <DashboardAdmin />; // or a loading spinner
   }
 
   const handleChange = (e) => {
@@ -52,7 +53,7 @@ const Login = () => {
       });
 
       if (error) {
-        setMsg("Failed to Login");
+        setMsg(`Failed to Login ${error.message}`);
         setFormData("");
         return;
       }

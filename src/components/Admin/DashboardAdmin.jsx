@@ -8,6 +8,7 @@ const DashboardAdmin = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
+  const [organization, setOrganization] = useState("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -20,6 +21,21 @@ const DashboardAdmin = () => {
       } else {
         setUser(user);
         setUsername(user.user_metadata.username);
+        await getOrganization(user.id);
+      }
+    };
+
+    const getOrganization = async (userId) => {
+      const { data, error } = await supabase
+        .from("organization")
+        .select("name")
+        .eq("auth_id", userId)
+        .single();
+
+      if (error) {
+        console.log(error.message);
+      } else {
+        setOrganization(data.name);
       }
     };
 
@@ -51,7 +67,7 @@ const DashboardAdmin = () => {
           <div className="flex flex-col gap-2 mt-10">
             <h1 className="font-bold text-lg uppercase">{username}</h1>
             <div className="flex flex-row gap-5 items-center justify-between">
-              <h1 className="font-bold text-lg">organization</h1>
+              <h1 className="font-bold text-lg">{organization}</h1>
               <Link to="/admin/organization" element={<Organization />}>
                 <VscDiffAdded size={30} />
               </Link>
@@ -60,21 +76,27 @@ const DashboardAdmin = () => {
         </div>
 
         <div className="flex flex-col justify-center w-full h-60 gap-5">
-          <a href="#" className="text-left font-semibold text-lg">
+          <Link
+            to="/admin/all_item"
+            className="text-left font-semibold text-lg"
+          >
             Items
-          </a>
-          <a href="#" className="text-left font-semibold text-lg">
+          </Link>
+          <Link
+            to="/admin/add_item"
+            className="text-left font-semibold text-lg"
+          >
             Item In
-          </a>
-          <a href="#" className="text-left font-semibold text-lg">
+          </Link>
+          <Link to="/admin/ItemOff" className="text-left font-semibold text-lg">
             Item Out
-          </a>
-          <a href="#" className="text-left font-semibold text-lg">
+          </Link>
+          <Link to="/admin/Supps" className="text-left font-semibold text-lg">
             Suppliers
-          </a>
-          <a href="#" className="text-left font-semibold text-lg">
+          </Link>
+          <Link to="/admin/Reports" className="text-left font-semibold text-lg">
             Reports
-          </a>
+          </Link>
         </div>
 
         <div className="flex flex-col justify-center w-full h-60 gap-5">
