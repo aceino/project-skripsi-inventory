@@ -3,12 +3,18 @@ import { supabase } from "../../supabase/config";
 import { Link, useNavigate } from "react-router-dom";
 import Organization from "./components/Organization";
 import { VscDiffAdded } from "react-icons/vsc";
+import Allitem from "./components/Allitem";
+import ItemOff from "./components/ItemOff";
+import AddItem from "./components/AddItem";
+import Suppliers from "./components/Suppliers";
+import Reports from "./components/Reports";
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
   const [organization, setOrganization] = useState("");
+  const [activeComponent, setActiveComponent] = useState(""); // Add a new state to keep track of the active component
 
   useEffect(() => {
     const getUser = async () => {
@@ -76,27 +82,36 @@ const DashboardAdmin = () => {
         </div>
 
         <div className="flex flex-col justify-center w-full h-60 gap-5">
-          <Link
-            to="/admin/all_item"
+          <button
+            onClick={() => setActiveComponent("allItem")}
             className="text-left font-semibold text-lg"
           >
             Items
-          </Link>
-          <Link
-            to="/admin/add_item"
+          </button>
+          <button
+            onClick={() => setActiveComponent("barangMasuk")}
             className="text-left font-semibold text-lg"
           >
-            Item In
-          </Link>
-          <Link to="/admin/ItemOff" className="text-left font-semibold text-lg">
-            Item Out
-          </Link>
-          <Link to="/admin/Supps" className="text-left font-semibold text-lg">
+            Incoming Goods
+          </button>
+          <button
+            onClick={() => setActiveComponent("barangKeluar")}
+            className="text-left font-semibold text-lg"
+          >
+            Outgoing Goods
+          </button>
+          <button
+            onClick={() => setActiveComponent("suppliers")}
+            className="text-left font-semibold text-lg"
+          >
             Suppliers
-          </Link>
-          <Link to="/admin/Reports" className="text-left font-semibold text-lg">
+          </button>
+          <button
+            onClick={() => setActiveComponent("reports")}
+            className="text-left font-semibold text-lg"
+          >
             Reports
-          </Link>
+          </button>
         </div>
 
         <div className="flex flex-col justify-center w-full h-60 gap-5">
@@ -110,8 +125,17 @@ const DashboardAdmin = () => {
         </div>
       </div>
 
-      <div className="flex flex-col justify-start items-center w-4/5 bg-[#FAFAF6] rounded-tr-lg rounded-br-lg min-h-full p-5">
-        {/* <Menu /> */}
+      <div className="flex flex-col justify-start items-center w-4/5 bg-[#FAFAF6] rounded-tr-lg rounded-br-lg min-h-full p-5 text-black">
+        {activeComponent === "" && (
+          <h1 className="relative translate-y-60 text-center font-bold text-4xl">
+            WELCOME
+          </h1>
+        )}
+        {activeComponent === "allItem" && <Allitem />}
+        {activeComponent === "barangKeluar" && <ItemOff />}
+        {activeComponent === "barangMasuk" && <AddItem />}
+        {activeComponent === "suppliers" && <Suppliers />}
+        {activeComponent === "reports" && <Reports />}
       </div>
     </div>
   );
